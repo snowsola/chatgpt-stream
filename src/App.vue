@@ -41,12 +41,18 @@
                     <v-list-item-title >{{ item.username }}</v-list-item-title>
                     <v-list-item-subtitle>{{ item.createTime }}</v-list-item-subtitle>
                     <v-list-item-subtitle>
-                      <v-textarea
+                      <Editor
+                        mode="viewer"
+                        ref="editor"
+                        hint="Hint"
+                        :outline="false"
+                        :render-config="renderConfig"
+                        v-model="message"
                         filled
                         :height="item.height"
                         :background-color="item.color"
                         :value="item.msg"
-                      ></v-textarea>
+                      ></Editor>
                     </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
@@ -76,17 +82,34 @@
 </template>
 
 <script>
+
+import { Editor } from "vuetify-markdown-editor";
 export default {
   name: 'ChatGPT',
 
   components: {
+    Editor
   },
 
-  data: () => ({
+  data() {
+    return {
       message: '',
       ws: null,
       messages: [],
-    }),
+      renderConfig: {
+        // Mermaid config
+        mermaid: {
+          theme: "dark"
+        }
+      }
+    };
+  },
+
+  // data: () => ({
+  //     message: '',
+  //     ws: null,
+  //     messages: [],
+  //   }),
 
   created () {
     const vm = this
@@ -166,7 +189,7 @@ export default {
         }
         vm.messages.push(msgNew)
         vm.messages.push({ divider: true, inset: true })
-        
+
         if (msgRecv.kind === 'retry') {
           vm.reconnectWs()
         }
