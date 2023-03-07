@@ -6,7 +6,7 @@
       dark
     >
       <div class="d-flex align-center">
-        <h2>ChatGPT Stream</h2>
+        <h2>Noland World</h2>
       </div>
       <v-spacer></v-spacer>
       <v-btn @click="refreshPage" icon>
@@ -150,8 +150,8 @@ export default {
           height = 60
           color = 'blue lighten-5'
         } else if (msgRecv.kind === 'chat') {
-          username = 'CHATGPT'
-          avatar = require('./assets/chatgpt.png')
+          username = 'NOLAND WORLD'
+          avatar = require('./assets/developer.png')
           height = 360
           color = 'green lighten-5'
         }
