@@ -47,7 +47,7 @@
                         hint="Hint"
                         :outline="false"
                         :render-config="renderConfig"
-                        v-model="message"
+                        v-model="item.msg"
                         filled
                         :height="item.height"
                         :background-color="item.color"
