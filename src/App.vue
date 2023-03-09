@@ -120,13 +120,71 @@ export default {
   },
 
   methods: {
-		wsInit() {
+    async chat(message) {
+      let method = 'POST';
+
+      let baseUrl = "https://proxy.noland.world/?https://chat.noland.world/v1/chat/completions";
+      let url = new URL("/", baseUrl);
+
+
+      let new_request_headers = new Headers();
+      new_request_headers.set('Authorization', 'Bearer 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');
+      new_request_headers.set('Content-Type', 'application/json');
+
+      let response = await fetch(url.href, {
+        method: method,
+        headers: new_request_headers,
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        body: JSON.stringify({
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              "role": "user",
+              "content": message
+            }
+          ]
+        })
+      })
+
+      let username = ''
+      let avatar = ''
+      let height = 60
+      let color = 'white'
+      if (response.status !== 200) {
+        username = 'ERROR'
+        avatar = require('./assets/error.png')
+        height = 60
+        color = 'red lighten-5'
+      } else {
+        username = 'NOLAND WORLD'
+        avatar = require('./assets/developer.png')
+        height = 360
+        color = 'green lighten-5'
+      }
+
+      let body = await response.json()
+      let msgNew = {
+        username: username,
+        avatar: avatar,
+        color: color,
+        msgId: body.id,
+        createTime: body.created,
+        msg: body.choices[0].message.content,
+        height: height,
+      }
       const vm = this
-			vm.ws = new WebSocket(`${vm.BASE_WS}/api/ws/chat`)
-			vm.ws.onmessage = vm.wsOnMessage
-			vm.ws.onopen = vm.wsOnOpen
-			vm.ws.onerror = vm.wsOnError
-			vm.ws.onclose = vm.wsOnClose
+      vm.messages.push(msgNew)
+      vm.messages.push({ divider: true, inset: true })
+    },
+		wsInit() {
+      // const vm = this
+			// vm.ws = new WebSocket(`${vm.BASE_WS}/api/ws/chat`)
+			// vm.ws.onmessage = vm.wsOnMessage
+			// vm.ws.onopen = vm.wsOnOpen
+			// vm.ws.onerror = vm.wsOnError
+			// vm.ws.onclose = vm.wsOnClose
 		},
 		wsOnOpen() {
       const vm = this
@@ -207,8 +265,18 @@ export default {
     sendMessage () {
       const vm = this
       if (vm.message !== '') {
-        vm.ws.send(vm.message)
-        console.log(vm.message)
+        //vm.ws.send(vm.message)
+        //console.log(vm.message)
+        let msgNew = {
+          username: 'YOU',
+          avatar: require('./assets/developer.png'),
+          color: 'blue lighten-5',
+          msg: vm.message,
+          height: 60,
+        }
+        vm.messages.push(msgNew)
+        vm.messages.push({ divider: true, inset: true })
+        vm.chat(vm.message)
       }
     },
     reconnectWs () {
